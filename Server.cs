@@ -9,42 +9,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Net.WebSockets;
 
-namespace HttpListenerWebSocketEcho
-{        
-    class WEBS
-    {
-        public WEBS()
-        {
-            var server = new Server();
-            server.Start("http://127.0.0.1:7850/wsDemo/");
-            Console.WriteLine("Press any key to exit...");
-            server.HttpRequest += new_http_request;
-            server.NewWebSocketRequest += new_ws_request;
-            server.WebSocketRequest += ws_request;
-            Console.ReadKey();
-
-
-            void new_http_request (object sender, RequestProcessorEventArgs e)
-            {
-                Console.WriteLine("Elo http");
-            }
-
-            void new_ws_request (object sender, RequestProcessorEventArgs e)
-            {
-                Console.WriteLine("Elo new WS");
-            }
-
-            void ws_request (object sender, WSReceiveResultEventArgs e)
-            {
-                Console.WriteLine("Elo WS");
-            }
-
-        }
-    }
-
-    //## The Server class        
-
-
+namespace BattleshipsServer
+{           
     public class WSReceiveResultEventArgs : System.EventArgs {
         public readonly WebSocketReceiveResult receiveResult;
 
@@ -111,7 +77,6 @@ namespace HttpListenerWebSocketEcho
                 {
                     OnHttpRequest(new RequestProcessorEventArgs(listenerContext));
                     Console.WriteLine(listenerContext.Request.HttpMethod);
-                    listenerContext.Response.StatusCode = 400;
                     listenerContext.Response.Close();
                 }
             }
