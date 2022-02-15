@@ -22,6 +22,8 @@ namespace BattleshipsServer
             GamesList.RegisterGame("Test2");
 
             var httpHandler = new HttpHandlers(server);
+            var WSHandler = new WebSocketHandlers(server);
+
 
             Console.WriteLine("Press any key to exit...");
             Console.ReadKey();

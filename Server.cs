@@ -11,11 +11,15 @@ using System.Net.WebSockets;
 
 namespace BattleshipsServer
 {           
-    public class WSReceiveResultEventArgs : System.EventArgs {
-        public readonly WebSocketReceiveResult receiveResult;
+    public class WebSocketContextEventArgs : System.EventArgs {
+        public readonly WebSocketContext WSocketContext;
+        public readonly WebSocketReceiveResult WSocketResult;
+        public readonly byte[] receiveBuffer;
 
-        public WSReceiveResultEventArgs (WebSocketReceiveResult WSReceiveResult) {
-            receiveResult = WSReceiveResult;
+        public WebSocketContextEventArgs (WebSocketContext WSocketContext, WebSocketReceiveResult WSocketResult, byte[] receiveBuffer) {
+            this.WSocketContext = WSocketContext;
+            this.WSocketResult = WSocketResult;
+            this.receiveBuffer = receiveBuffer;
         }
 
     }
@@ -33,26 +37,26 @@ namespace BattleshipsServer
     {        
         private int count = 0;
 
-        public event EventHandler<RequestProcessorEventArgs> NewWebSocketRequest;
-        public event EventHandler<WSReceiveResultEventArgs> WebSocketRequest;
-        public event EventHandler<WSReceiveResultEventArgs> WebSocketClose;
+        // public event EventHandler<WebSocketContextEventArgs> NewWebSocketRequest;
+        public event EventHandler<WebSocketContextEventArgs> WebSocketRequest;
+        public event EventHandler<WebSocketContextEventArgs> WebSocketClose;
 
         public event EventHandler<RequestProcessorEventArgs> HttpRequest;
 
 
-        protected virtual void OnNewWebSocketRequest (RequestProcessorEventArgs e) {
-            NewWebSocketRequest?.Invoke(this, e);
-        }
+        // protected virtual void OnNewWebSocketRequest (WebSocketContextEventArgs e) {
+        //     NewWebSocketRequest?.Invoke(this, e);
+        // }
 
         protected virtual void OnHttpRequest (RequestProcessorEventArgs e) {
             HttpRequest?.Invoke(this, e);
         }
 
-        protected virtual void OnWebSocketRequest (WSReceiveResultEventArgs e) {
+        protected virtual void OnWebSocketRequest (WebSocketContextEventArgs e) {
             WebSocketRequest?.Invoke(this, e);
         }
 
-        protected virtual void OnWebSocketClose (WSReceiveResultEventArgs e) {
+        protected virtual void OnWebSocketClose (WebSocketContextEventArgs e) {
             WebSocketClose?.Invoke(this, e);
         }
 
@@ -70,7 +74,6 @@ namespace BattleshipsServer
                 HttpListenerContext listenerContext = await listener.GetContextAsync();
                 if (listenerContext.Request.IsWebSocketRequest)
                 {
-                    OnNewWebSocketRequest(new RequestProcessorEventArgs(listenerContext));
                     ProcessRequest(listenerContext);
                 }
                 else
@@ -101,12 +104,12 @@ namespace BattleshipsServer
                 return;
             }
                                 
-            WebSocket webSocket = webSocketContext.WebSocket;                                          
+            WebSocket webSocket = webSocketContext.WebSocket;                  
 
             try
             {
                 //### Receiving
-
+                // OnNewWebSocketRequest(new WebSocketContextEventArgs(webSocketContext));
                 byte[] receiveBuffer = new byte[1024];
 
                 // While the WebSocket connection remains open run a simple loop that receives data and sends it back.
@@ -115,24 +118,26 @@ namespace BattleshipsServer
                     
                     WebSocketReceiveResult receiveResult = await webSocket.ReceiveAsync(new ArraySegment<byte>(receiveBuffer), CancellationToken.None);
 
-                    OnWebSocketRequest(new WSReceiveResultEventArgs(receiveResult));
-
                     
                     if (receiveResult.MessageType == WebSocketMessageType.Close)
                     {
-                        OnWebSocketClose(new WSReceiveResultEventArgs(receiveResult));
+                        OnWebSocketClose(new WebSocketContextEventArgs(webSocketContext, receiveResult, receiveBuffer));
                         await webSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, "", CancellationToken.None);
                     }
                     
                     else if (receiveResult.MessageType == WebSocketMessageType.Text)
                     {    
-                        OnWebSocketClose(new WSReceiveResultEventArgs(receiveResult));
+                        OnWebSocketClose(new WebSocketContextEventArgs(webSocketContext, receiveResult, receiveBuffer));
                         await webSocket.CloseAsync(WebSocketCloseStatus.InvalidMessageType, "Cannot accept text frame", CancellationToken.None);
+                    } else if (webSocketContext.Headers["Sec-WebSocket-Protocol"] != "bson") {
+                        OnWebSocketClose(new WebSocketContextEventArgs(webSocketContext, receiveResult, receiveBuffer));
+                        await webSocket.CloseAsync(WebSocketCloseStatus.ProtocolError, "Unsupported subprotocol", CancellationToken.None);
                     }
 
                     else
                     {                        
-                        await webSocket.SendAsync(new ArraySegment<byte>(receiveBuffer, 0, receiveResult.Count), WebSocketMessageType.Binary, receiveResult.EndOfMessage, CancellationToken.None);
+                        OnWebSocketRequest(new WebSocketContextEventArgs(webSocketContext, receiveResult, receiveBuffer));
+                        // await webSocket.SendAsync(new ArraySegment<byte>(receiveBuffer, 0, receiveResult.Count), WebSocketMessageType.Binary, receiveResult.EndOfMessage, CancellationToken.None);
                     }
 
                     Console.WriteLine(Convert.ToBase64String(receiveBuffer)[..4]);
