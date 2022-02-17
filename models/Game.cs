@@ -9,9 +9,5 @@ namespace BattleshipsBoard
         public Game(string player) {
             players.playerOne = player;
         }
-
-        public override string ToString(){
-            return "1";
-        }
     }
 }

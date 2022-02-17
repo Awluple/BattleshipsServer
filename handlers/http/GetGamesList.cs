@@ -2,7 +2,6 @@ using System.Text.Json;
 using System.Linq;
 using System.IO;
 using System.Collections.Generic;
-
 using BattleshipsBoard;
 
 namespace BattleshipsServer
@@ -27,10 +26,10 @@ namespace BattleshipsServer
 
             var Response = e.context.Response;
 
-            GameInfo[] kk = GamesList.gamesList.Select(e => {return new GameInfo(e.Key, e.Value.Item2.players.playerTwo == null ? 1 : 2);}).ToArray();
+            GameInfo[] avaliableGames = GamesList.gamesList.Select(e => {return new GameInfo(e.Key, e.Value.players.playerTwo == null ? 1 : 2);}).ToArray();
 
             Dictionary<string, GameInfo[]> keys = new Dictionary<string, GameInfo[]>() {
-                {"games", kk}
+                {"games", avaliableGames}
             };
 
             byte[] bOutput = JsonSerializer.SerializeToUtf8Bytes(keys);

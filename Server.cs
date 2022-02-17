@@ -104,7 +104,7 @@ namespace BattleshipsServer
                 return;
             }
                                 
-            WebSocket webSocket = webSocketContext.WebSocket;                  
+            WebSocket webSocket = webSocketContext.WebSocket;
 
             try
             {
@@ -117,7 +117,7 @@ namespace BattleshipsServer
                 {
                     
                     WebSocketReceiveResult receiveResult = await webSocket.ReceiveAsync(new ArraySegment<byte>(receiveBuffer), CancellationToken.None);
-
+                    // Console.WriteLine("Req ID: " + webSocketContext.Headers["player"]);
                     
                     if (receiveResult.MessageType == WebSocketMessageType.Close)
                     {
@@ -140,7 +140,7 @@ namespace BattleshipsServer
                         // await webSocket.SendAsync(new ArraySegment<byte>(receiveBuffer, 0, receiveResult.Count), WebSocketMessageType.Binary, receiveResult.EndOfMessage, CancellationToken.None);
                     }
 
-                    Console.WriteLine(Convert.ToBase64String(receiveBuffer)[..4]);
+                    // Console.WriteLine(Convert.ToBase64String(receiveBuffer)[..4]);
 
                 }
             }
@@ -153,7 +153,8 @@ namespace BattleshipsServer
             {
                 // Clean up by disposing the WebSocket once it is closed/aborted.
                 if (webSocket != null)
-                    webSocket.Dispose();
+                    Console.WriteLine("Disconnected ID: " + webSocketContext.Headers["player"]);
+                    webSocket.Dispose(); 
             }
         }
     }

@@ -1,7 +1,4 @@
-using System;
-using System.IO;
-using Newtonsoft.Json.Bson;
-using Newtonsoft.Json;
+using BattleshipsBoard;
 
 namespace BattleshipsServer
 {
@@ -17,21 +14,38 @@ namespace BattleshipsServer
         public string player { get; }
     };
 
+    public struct Confirmation
+    {
+        #nullable enable
+        public Confirmation(bool succeed, string? player = null)
+        {
+            this.succeed = succeed;
+            this.player = player;
+        }
+        public bool succeed { get; }
+        public string? player { get; }
+    }
+
     partial class WebSocketHandlers {
         partial void JoinGame(object sender, WebSocketContextEventArgs e) {
+
             var ws = e.WSocketResult;
-            
-            MemoryStream ms = new MemoryStream(e.receiveBuffer);
 
-            using (BsonDataReader reader = new BsonDataReader(ms))
-            {
-                JsonSerializer serializer = new JsonSerializer();
-                GameJoinInfo game = serializer.Deserialize<GameJoinInfo>(reader);
+            GameJoinInfo requestedGame = new GameJoinInfo();
 
-                Console.WriteLine(game.id);
-                Console.WriteLine("Player: " + game.player);
+            GetDeserialized<GameJoinInfo>(ref requestedGame, e.receiveBuffer);
+
+            Confirmation confirmation;
+
+            // check if player2 is empty, then add it
+            if(GamesList.gamesList.ContainsKey(requestedGame.id) && GamesList.gamesList[requestedGame.id].players.playerTwo == null){
+                GamesList.AddPlayer(GamesList.gamesList[requestedGame.id], requestedGame.player);
+                confirmation = new Confirmation(true, GamesList.gamesList[requestedGame.id].players.playerOne);
+            } else {
+                confirmation = new Confirmation(false);
             }
-
+            
+            Send(confirmation, e.WSocketContext.WebSocket);
         }
     }
 }
