@@ -2,7 +2,7 @@ using System.Text.Json;
 using System.Linq;
 using System.IO;
 using System.Collections.Generic;
-using BattleshipsBoard;
+using BattleshipsServer.Board;
 
 namespace BattleshipsServer
 {
@@ -41,6 +41,7 @@ namespace BattleshipsServer
             Stream OutputStream = Response.OutputStream;
             Response.StatusCode = 200;
             await OutputStream.WriteAsync(bOutput, 0, bOutput.Length);
+            Response.Close();
         }
     }
 }

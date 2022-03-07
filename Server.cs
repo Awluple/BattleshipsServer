@@ -80,7 +80,7 @@ namespace BattleshipsServer
                 {
                     OnHttpRequest(new RequestProcessorEventArgs(listenerContext));
                     Console.WriteLine(listenerContext.Request.HttpMethod);
-                    listenerContext.Response.Close();
+                    // listenerContext.Response.Close();
                 }
             }
         }

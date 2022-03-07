@@ -1,4 +1,4 @@
-using BattleshipsBoard;
+using BattleshipsServer.Board;
 
 namespace BattleshipsServer
 {
@@ -45,7 +45,7 @@ namespace BattleshipsServer
                 confirmation = new Confirmation(false);
             }
             
-            Send(confirmation, e.WSocketContext.WebSocket);
+            Send("GameJoinConfirmation", confirmation, e.WSocketContext.WebSocket);
         }
     }
 }

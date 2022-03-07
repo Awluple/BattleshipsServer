@@ -5,7 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 
 using BattleshipsServer;
-using BattleshipsBoard;
+using BattleshipsServer.Board;
 
 namespace BattleshipsServer
 {
@@ -16,7 +16,7 @@ namespace BattleshipsServer
         {
 
             var server = new Server();
-            server.Start("http://127.0.0.1:7850/wsDemo/");
+            server.Start("http://127.0.0.1:7850/");
 
             GamesList.RegisterGame("test1");
             GamesList.RegisterGame("Test2");

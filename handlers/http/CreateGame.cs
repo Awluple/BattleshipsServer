@@ -3,7 +3,7 @@ using System.IO;
 using System.Text.Json;
 using System.Collections.Generic;
 
-using BattleshipsBoard;
+using BattleshipsServer.Board;
 
 namespace BattleshipsServer
 {
@@ -17,7 +17,6 @@ namespace BattleshipsServer
         async partial void CreateGame(object sender, RequestProcessorEventArgs e) {
             var Response = e.context.Response;
             var Request = e.context.Request;
-
 
             if(Request.HttpMethod != "POST") {
                 return;
@@ -36,12 +35,13 @@ namespace BattleshipsServer
 
             byte[] bOutput = JsonSerializer.SerializeToUtf8Bytes(result);
 
-            Response.ContentType = "Application/json";
+            Response.ContentType = "application/json";
             Response.ContentLength64 = bOutput.Length;
 
             Stream OutputStream = Response.OutputStream;
             Response.StatusCode = 201;
             await OutputStream.WriteAsync(bOutput, 0, bOutput.Length);
+            Response.Close();
         }
     }
 }

@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using System;
-namespace BattleshipsBoard
+namespace BattleshipsServer.Board
 {
     public static class GamesList
     {

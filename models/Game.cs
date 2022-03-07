@@ -1,5 +1,5 @@
 
-namespace BattleshipsBoard
+namespace BattleshipsServer.Board
 {
     public class Game
     {
