@@ -1,51 +1,34 @@
 using BattleshipsServer.Board;
+using System;
+
+using BattleshipsShared.Models;
+using BattleshipsShared.Communication;
 
 namespace BattleshipsServer
 {
-
-    public struct GameJoinInfo
-    {
-        public GameJoinInfo(int id, string player)
-        {
-            this.id = id;
-            this.player = player;
-        }
-        public int id { get; }
-        public string player { get; }
-    };
-
-    public struct Confirmation
-    {
-        #nullable enable
-        public Confirmation(bool succeed, string? player = null)
-        {
-            this.succeed = succeed;
-            this.player = player;
-        }
-        public bool succeed { get; }
-        public string? player { get; }
-    }
 
     partial class WebSocketHandlers {
         partial void JoinGame(object sender, WebSocketContextEventArgs e) {
 
             var ws = e.WSocketResult;
 
+            Console.WriteLine("Message: " + e.message.requestType);
+
             GameJoinInfo requestedGame = new GameJoinInfo();
 
             GetDeserialized<GameJoinInfo>(ref requestedGame, e.receiveBuffer);
 
-            Confirmation confirmation;
+            JoinConfirmation confirmation;
 
             // check if player2 is empty, then add it
             if(GamesList.gamesList.ContainsKey(requestedGame.id) && GamesList.gamesList[requestedGame.id].players.playerTwo == null){
-                GamesList.AddPlayer(GamesList.gamesList[requestedGame.id], requestedGame.player);
-                confirmation = new Confirmation(true, GamesList.gamesList[requestedGame.id].players.playerOne);
+                GamesList.AddPlayer(GamesList.gamesList[requestedGame.id], requestedGame.opponentPlayer);
+                confirmation = new JoinConfirmation(true, GamesList.gamesList[requestedGame.id].players.playerOne);
             } else {
-                confirmation = new Confirmation(false);
+                confirmation = new JoinConfirmation(false, null);
             }
             
-            Send("GameJoinConfirmation", confirmation, e.WSocketContext.WebSocket);
+            Send(RequestType.JoinConfirmation, confirmation, e.WSocketContext.WebSocket);
         }
     }
 }

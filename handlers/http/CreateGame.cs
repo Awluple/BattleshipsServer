@@ -3,15 +3,12 @@ using System.IO;
 using System.Text.Json;
 using System.Collections.Generic;
 
+using BattleshipsShared.Models;
+
 using BattleshipsServer.Board;
 
 namespace BattleshipsServer
 {
-
-    public struct User
-    {
-        public string username { get; set; }
-    }
 
     partial class HttpHandlers {
         async partial void CreateGame(object sender, RequestProcessorEventArgs e) {

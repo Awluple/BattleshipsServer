@@ -1,6 +1,7 @@
 
 
 using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -9,19 +10,43 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Net.WebSockets;
 
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Bson;
+
+using BattleshipsShared.Communication;
+
 namespace BattleshipsServer
 {           
     public class WebSocketContextEventArgs : System.EventArgs {
         public readonly WebSocketContext WSocketContext;
         public readonly WebSocketReceiveResult WSocketResult;
         public readonly byte[] receiveBuffer;
+        public readonly Message message;
+
+
+        private Message GetData(byte[] receiveBuffer) {
+            MemoryStream ms = new MemoryStream(receiveBuffer);
+            try
+                {
+                    using (BsonDataReader reader = new BsonDataReader(ms))
+                    {
+                        JsonSerializer serializer = new JsonSerializer();
+                        return serializer.Deserialize<Message>(reader);
+                    }
+                }
+                catch (Newtonsoft.Json.JsonSerializationException ex)
+                {
+                    return new Message(RequestType.Error, null);
+                }
+        }
 
         public WebSocketContextEventArgs (WebSocketContext WSocketContext, WebSocketReceiveResult WSocketResult, byte[] receiveBuffer) {
             this.WSocketContext = WSocketContext;
             this.WSocketResult = WSocketResult;
             this.receiveBuffer = receiveBuffer;
+            this.message = this.GetData(receiveBuffer);
         }
-
     }
 
     public class RequestProcessorEventArgs : System.EventArgs {
@@ -109,7 +134,6 @@ namespace BattleshipsServer
             try
             {
                 //### Receiving
-                // OnNewWebSocketRequest(new WebSocketContextEventArgs(webSocketContext));
                 byte[] receiveBuffer = new byte[1024];
 
                 // While the WebSocket connection remains open run a simple loop that receives data and sends it back.

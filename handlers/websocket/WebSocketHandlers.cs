@@ -4,20 +4,10 @@ using Newtonsoft.Json;
 using System.Threading;
 using System.Net.WebSockets;
 
+using BattleshipsShared.Communication;
 
 namespace BattleshipsServer
 {
-    public struct Message
-    {
-
-        public Message(string dataType, object data) {
-            this.dataType = dataType;
-            this.data = data;
-        }
-
-        public string dataType { get; set; }
-        public object data { get; set; }
-    }
     partial class WebSocketHandlers
     {
         private Server server;
@@ -41,7 +31,7 @@ namespace BattleshipsServer
             }
         }
 
-        private async void Send(string dataType, object toSend, WebSocket wsocket) {
+        private async void Send(RequestType dataType, object toSend, WebSocket wsocket) {
             using (MemoryStream msa = new MemoryStream())
             using (BsonDataWriter datawriter = new BsonDataWriter(msa))
             {

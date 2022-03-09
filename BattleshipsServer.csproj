@@ -7,6 +7,9 @@
 
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json.Bson" Version="1.0.2" />
+    <Reference Include="BattleshipsShared">
+      <HintPath>../BattleshipsShared/bin/Debug/netstandard2.0/BattleshipsShared.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>

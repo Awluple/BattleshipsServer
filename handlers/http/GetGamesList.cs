@@ -2,21 +2,13 @@ using System.Text.Json;
 using System.Linq;
 using System.IO;
 using System.Collections.Generic;
+
+using BattleshipsShared.Models;
+
 using BattleshipsServer.Board;
 
 namespace BattleshipsServer
 {
-
-    public struct GameInfo
-    {
-        public GameInfo(int id, int players)
-        {
-            this.id = id;
-            this.players = players;
-        }
-        public int id { get; }
-        public int players { get; }
-    }
 
     partial class HttpHandlers {
         async partial void ReturnGamesList(object sender, RequestProcessorEventArgs e){
