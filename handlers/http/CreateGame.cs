@@ -21,24 +21,19 @@ namespace BattleshipsServer
             if(Request.ContentType.ToLower() != "application/json") {
                 Console.WriteLine(Request.ContentType);
                 Response.StatusCode = 400;
+                Response.Close();
                 return;
             }
 
             User user = await JsonSerializer.DeserializeAsync<User>(Request.InputStream);
             
-            Dictionary<string, byte> result = new Dictionary<string, byte>() {
-                {"id", (byte)GamesList.RegisterGame(user.username)}
+            Dictionary<string, int> result = new Dictionary<string, int>() {
+                {"id", GamesList.RegisterGame(user.userId)}
             };
 
             byte[] bOutput = JsonSerializer.SerializeToUtf8Bytes(result);
 
-            Response.ContentType = "application/json";
-            Response.ContentLength64 = bOutput.Length;
-
-            Stream OutputStream = Response.OutputStream;
-            Response.StatusCode = 201;
-            await OutputStream.WriteAsync(bOutput, 0, bOutput.Length);
-            Response.Close();
+            Send(e.context, bOutput);
         }
     }
 }

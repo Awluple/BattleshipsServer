@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 using BattleshipsServer.Board;
 using System;
 
@@ -10,9 +12,11 @@ namespace BattleshipsServer
     partial class WebSocketHandlers {
         partial void JoinGame(object sender, WebSocketContextEventArgs e) {
 
-            var ws = e.WSocketResult;
+            if(e.message.requestType != RequestType.JoinGame) {
+                return;
+            }
 
-            Console.WriteLine("Message: " + e.message.requestType);
+            var ws = e.WSocketResult;
 
             GameJoinInfo requestedGame = new GameJoinInfo();
 
@@ -27,8 +31,12 @@ namespace BattleshipsServer
             } else {
                 confirmation = new JoinConfirmation(false, null);
             }
+
+            Dictionary<string ,object> toSend = new Dictionary<string, object> {
+                {"confirmation", confirmation}
+            };
             
-            Send(RequestType.JoinConfirmation, confirmation, e.WSocketContext.WebSocket);
+            Send(RequestType.JoinConfirmation, toSend, e.WSocketContext.WebSocket);
         }
     }
 }

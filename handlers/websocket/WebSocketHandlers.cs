@@ -1,4 +1,5 @@
 using System.IO;
+using System.Collections.Generic;
 using Newtonsoft.Json.Bson;
 using Newtonsoft.Json;
 using System.Threading;
@@ -31,7 +32,7 @@ namespace BattleshipsServer
             }
         }
 
-        private async void Send(RequestType dataType, object toSend, WebSocket wsocket) {
+        private async void Send(RequestType dataType, Dictionary<string ,object> toSend, WebSocket wsocket) {
             using (MemoryStream msa = new MemoryStream())
             using (BsonDataWriter datawriter = new BsonDataWriter(msa))
             {

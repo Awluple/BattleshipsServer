@@ -11,8 +11,8 @@ namespace BattleshipsServer
 {
 
     partial class HttpHandlers {
-        async partial void ReturnGamesList(object sender, RequestProcessorEventArgs e){
-            if(e.context.Request.HttpMethod != "GET") {
+        partial void ReturnGamesList(object sender, RequestProcessorEventArgs e){
+            if(e.context.Request.HttpMethod != "GET" || e.context.Request.Url.ToString() != Settings.serverUri) {
                 return;
             }
 
@@ -27,13 +27,7 @@ namespace BattleshipsServer
             byte[] bOutput = JsonSerializer.SerializeToUtf8Bytes(keys);
 
 
-            Response.ContentType = "Application/json";
-            Response.ContentLength64 = bOutput.Length;
-
-            Stream OutputStream = Response.OutputStream;
-            Response.StatusCode = 200;
-            await OutputStream.WriteAsync(bOutput, 0, bOutput.Length);
-            Response.Close();
+            Send(e.context, bOutput);
         }
     }
 }

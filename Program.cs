@@ -10,13 +10,17 @@ using BattleshipsServer.Board;
 namespace BattleshipsServer
 {
 
+    static class Settings {
+        public static readonly string serverUri = "http://127.0.0.1:7850/";
+    }
+
     class Program
     {
         static void Main(string[] args)
         {
 
             var server = new Server();
-            server.Start("http://127.0.0.1:7850/");
+            server.Start(Settings.serverUri);
 
             GamesList.RegisterGame("test1");
             GamesList.RegisterGame("Test2");

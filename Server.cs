@@ -104,8 +104,7 @@ namespace BattleshipsServer
                 else
                 {
                     OnHttpRequest(new RequestProcessorEventArgs(listenerContext));
-                    Console.WriteLine(listenerContext.Request.HttpMethod);
-                    // listenerContext.Response.Close();
+                    Console.WriteLine(listenerContext.Request.HttpMethod + " - " + listenerContext.Request.Url);
                 }
             }
         }
