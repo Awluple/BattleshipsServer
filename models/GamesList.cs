@@ -1,5 +1,9 @@
-using System.Collections.Generic;
 using System;
+using System.Collections.Generic;
+using System.Net.WebSockets;
+
+using BattleshipsShared.Models;
+
 namespace BattleshipsServer.Board
 {
     public static class GamesList
@@ -12,15 +16,28 @@ namespace BattleshipsServer.Board
 
         static private int MaxId = 0;
 
-        static public int RegisterGame(string player) {
-            var game = new Game(player);
+        static public int RegisterGame() {
+            var game = new Game();
             _gamesList.Add(MaxId, game);
             MaxId++;
             
             return MaxId - 1;
         }
-        static public void AddPlayer(Game game, string player) {
-            game.players.playerTwo = player;
+        static public JoinConfirmation AddPlayer(int gameId, string player, WebSocketContext WSocket) {
+            Game game;
+            if (!gamesList.TryGetValue(gameId, out game) && ((game.players.playerOne == null) || (game.players.playerTwo == null))) {
+                return new JoinConfirmation(false, null);
+            }
+            if(game.players.playerOne == null) {
+                game.players.playerOne = new Player(player, WSocket);
+            } else {
+                game.players.playerTwo = new Player(player, WSocket);
+            }
+
+            Player? opponent = game.GetOpponent(player);
+
+            return new JoinConfirmation(true, opponent.HasValue ? opponent.Value.userId : null);
+            
         }
 
         static public void UnregisterGame(int gameId) {

@@ -1,10 +1,13 @@
 using System.Collections.Generic;
+using System.Net.WebSockets;
 
 using BattleshipsServer.Board;
 using System;
 
 using BattleshipsShared.Models;
 using BattleshipsShared.Communication;
+
+using Newtonsoft.Json.Linq;
 
 namespace BattleshipsServer
 {
@@ -17,26 +20,26 @@ namespace BattleshipsServer
             }
 
             var ws = e.WSocketResult;
+            JObject obj = (JObject)e.message.data;
 
-            GameJoinInfo requestedGame = new GameJoinInfo();
+            Dictionary<string, object> data = obj.ToObject<Dictionary<string, object>>();
+            JObject obje = (JObject)data["gameJoinInfo"];
+            GameJoinInfo requestedGame = obje.ToObject<GameJoinInfo>();
 
-            GetDeserialized<GameJoinInfo>(ref requestedGame, e.receiveBuffer);
+            // GetDeserialized<GameJoinInfo>(obj.ToObject<GameJoinInfo>, out requestedGame);
 
-            JoinConfirmation confirmation;
-
-            // check if player2 is empty, then add it
-            if(GamesList.gamesList.ContainsKey(requestedGame.id) && GamesList.gamesList[requestedGame.id].players.playerTwo == null){
-                GamesList.AddPlayer(GamesList.gamesList[requestedGame.id], requestedGame.opponentPlayer);
-                confirmation = new JoinConfirmation(true, GamesList.gamesList[requestedGame.id].players.playerOne);
-            } else {
-                confirmation = new JoinConfirmation(false, null);
-            }
+            JoinConfirmation confirmation = GamesList.AddPlayer(requestedGame.id, requestedGame.player, e.WSocketContext);
 
             Dictionary<string ,object> toSend = new Dictionary<string, object> {
                 {"confirmation", confirmation}
             };
             
             Send(RequestType.JoinConfirmation, toSend, e.WSocketContext.WebSocket);
+
+            Player? player = GamesList.gamesList[requestedGame.id].GetOpponent(requestedGame.player);
+            if(player != null) {
+                Send(RequestType.OpponentFound, toSend, player.Value.WSocket.WebSocket);
+            }
         }
     }
 }

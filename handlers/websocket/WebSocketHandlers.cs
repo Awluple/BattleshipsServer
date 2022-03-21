@@ -22,7 +22,7 @@ namespace BattleshipsServer
             this.server.WebSocketRequest += this.JoinGame;
         }
 
-        private void GetDeserialized<T>(ref T result, byte[] receiveBuffer) {
+        private void GetDeserialized<T>(byte[] receiveBuffer, out T result) {
             MemoryStream ms = new MemoryStream(receiveBuffer);
 
             using (BsonDataReader reader = new BsonDataReader(ms))
