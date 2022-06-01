@@ -9,6 +9,8 @@ namespace BattleshipsServer.Board
     {
         public (Player? playerOne, Player? playerTwo) players = (null, null);
 
+        public Board playerOneBoard {get; set;}
+        public Board playerTwoBoard {get; set;}
 
         public Game() {
         }

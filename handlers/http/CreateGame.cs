@@ -11,7 +11,7 @@ namespace BattleshipsServer
 {
 
     partial class HttpHandlers {
-        async partial void CreateGame(object sender, RequestProcessorEventArgs e) {
+        partial void CreateGame(object sender, RequestProcessorEventArgs e) {
             var Response = e.context.Response;
             var Request = e.context.Request;
 
@@ -28,7 +28,7 @@ namespace BattleshipsServer
             // User user = await JsonSerializer.DeserializeAsync<User>(Request.InputStream);
             
             Dictionary<string, int> result = new Dictionary<string, int>() {
-                {"id", GamesList.RegisterGame()}
+                {"id", GamesManager.RegisterGame()}
             };
 
             byte[] bOutput = JsonSerializer.SerializeToUtf8Bytes(result);

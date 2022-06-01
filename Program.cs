@@ -22,9 +22,6 @@ namespace BattleshipsServer
             var server = new Server();
             server.Start(Settings.serverUri);
 
-            GamesList.RegisterGame();
-            GamesList.RegisterGame();
-
             var httpHandler = new HttpHandlers(server);
             var WSHandler = new WebSocketHandlers(server);
 

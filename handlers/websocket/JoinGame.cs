@@ -1,8 +1,6 @@
 using System.Collections.Generic;
-using System.Net.WebSockets;
 
 using BattleshipsServer.Board;
-using System;
 
 using BattleshipsShared.Models;
 using BattleshipsShared.Communication;
@@ -26,9 +24,7 @@ namespace BattleshipsServer
             JObject obje = (JObject)data["gameJoinInfo"];
             GameJoinInfo requestedGame = obje.ToObject<GameJoinInfo>();
 
-            // GetDeserialized<GameJoinInfo>(obj.ToObject<GameJoinInfo>, out requestedGame);
-
-            JoinConfirmation confirmation = GamesList.AddPlayer(requestedGame.id, requestedGame.player, e.WSocketContext);
+            JoinConfirmation confirmation = GamesManager.AddPlayer(requestedGame.id, requestedGame.player, e.WSocketContext);
 
             Dictionary<string ,object> toSend = new Dictionary<string, object> {
                 {"confirmation", confirmation}
@@ -36,7 +32,7 @@ namespace BattleshipsServer
             
             Send(RequestType.JoinConfirmation, toSend, e.WSocketContext.WebSocket);
 
-            Player? player = GamesList.gamesList[requestedGame.id].GetOpponent(requestedGame.player);
+            Player? player = GamesManager.gamesList[requestedGame.id].GetOpponent(requestedGame.player);
             if(player != null) {
                 Send(RequestType.OpponentFound, toSend, player.Value.WSocket.WebSocket);
             }

@@ -18,7 +18,7 @@ namespace BattleshipsServer
 
             var Response = e.context.Response;
 
-            GameInfo[] avaliableGames = GamesList.gamesList.Select(e => {return new GameInfo(e.Key, e.Value.players.playerTwo == null ? 1 : 2);}).ToArray();
+            GameInfo[] avaliableGames = GamesManager.gamesList.Select(e => {return new GameInfo(e.Key, e.Value.players.playerTwo == null ? 1 : 2);}).ToArray();
 
             Dictionary<string, GameInfo[]> keys = new Dictionary<string, GameInfo[]>() {
                 {"games", avaliableGames}

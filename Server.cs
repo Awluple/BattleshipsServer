@@ -35,7 +35,7 @@ namespace BattleshipsServer
                         return serializer.Deserialize<Message>(reader);
                     }
                 }
-                catch (Newtonsoft.Json.JsonSerializationException ex)
+                catch (Newtonsoft.Json.JsonSerializationException)
                 {
                     return new Message(RequestType.Error, null);
                 }

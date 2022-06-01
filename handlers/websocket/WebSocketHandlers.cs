@@ -20,6 +20,7 @@ namespace BattleshipsServer
 
         public void Start() {
             this.server.WebSocketRequest += this.JoinGame;
+            this.server.WebSocketRequest += this.SetBoard;
         }
 
         private void GetDeserialized<T>(byte[] receiveBuffer, out T result) {
@@ -43,5 +44,6 @@ namespace BattleshipsServer
         }
 
         partial void JoinGame(object sender, WebSocketContextEventArgs e);
+        partial void SetBoard(object sender, WebSocketContextEventArgs e);
     }
 }
