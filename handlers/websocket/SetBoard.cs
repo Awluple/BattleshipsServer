@@ -28,12 +28,13 @@ namespace BattleshipsServer
 
             bool gameReady = false;
             WebSocket playerSocket = null;
-            bool boardSet = GamesManager.SetBoard(board, e.WSocketContext.Headers["player"], out gameReady, out playerSocket);
+            WebSocket opponentSocket = null;
+            bool boardSet = GamesManager.SetBoard(board, e.WSocketContext.Headers["player"], out gameReady, out playerSocket, out opponentSocket);
             Dictionary<string ,object> toSend = new Dictionary<string, object> {
             };
-
             if(boardSet && gameReady) {
-                Send(RequestType.OpponentFound, toSend, playerSocket);
+                Send(RequestType.GameReady, toSend, playerSocket);
+                Send(RequestType.GameReady, toSend, opponentSocket);
             }
         }
     }

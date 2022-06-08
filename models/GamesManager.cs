@@ -50,29 +50,28 @@ namespace BattleshipsServer.Board
             return game;
         }
 
-        static public bool SetBoard(UserBoard userBoard, string player, out bool gameReady, out WebSocket playerSocket){
+        static public bool SetBoard(UserBoard userBoard, string player, out bool gameReady, out WebSocket playerSocket, out WebSocket opponentSocket){
             Game game = GetGame(userBoard.gameId);
-            Console.WriteLine($"Player: {player}");
-            Console.WriteLine($"Game: {userBoard.gameId}");
-            Console.WriteLine($"Player one: {game.players.playerOne.Value.userId}");
-            Console.WriteLine($"Player two: {game.players.playerOne.Value.userId}");
+
             if(game.players.playerOne.Value.userId == player) {
                 game.playerOneBoard = new Board(userBoard.board);
-                game.playerOneBoard.ShowBoard();
                 playerSocket = game.players.playerOne.Value.WSocket.WebSocket;
+                opponentSocket = game.players.playerTwo.Value.WSocket.WebSocket;
             } else if(game.players.playerTwo.Value.userId == player) {
                 game.playerTwoBoard = new Board(userBoard.board);
-                game.playerTwoBoard.ShowBoard();
                 playerSocket = game.players.playerTwo.Value.WSocket.WebSocket;
+                opponentSocket = game.players.playerOne.Value.WSocket.WebSocket;
             } else {
-                Console.WriteLine("Error!");
                 gameReady = false;
                 playerSocket = null;
+                opponentSocket= null;
                 return false;
             }
-            if(game.playerOneBoard != null && game.playerTwoBoard == null){
+            if(game.playerOneBoard != null && game.playerTwoBoard != null){
                 gameReady = true;
+                opponentSocket = game.GetOpponent(player).Value.WSocket.WebSocket;
             } else {
+                opponentSocket = null;
                 gameReady = false;
             }
             return true;
