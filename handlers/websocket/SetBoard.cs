@@ -27,14 +27,16 @@ namespace BattleshipsServer
             UserBoard board = obje.ToObject<UserBoard>();
 
             bool gameReady = false;
-            WebSocket playerSocket = null;
-            WebSocket opponentSocket = null;
-            bool boardSet = GamesManager.SetBoard(board, e.WSocketContext.Headers["player"], out gameReady, out playerSocket, out opponentSocket);
+            Game game = null;
+            bool boardSet = GamesManager.SetBoard(board, e.WSocketContext.Headers["player"], out gameReady, out game);
+
+            Random rnd = new Random();
             Dictionary<string ,object> toSend = new Dictionary<string, object> {
+                {"startingPlayer",  (object)(rnd.Next(1) == 0 ? e.WSocketContext.Headers["player"] : "0")} // a player who recives it's id starts first
             };
             if(boardSet && gameReady) {
-                Send(RequestType.GameReady, toSend, playerSocket);
-                Send(RequestType.GameReady, toSend, opponentSocket);
+                Send(RequestType.GameReady, toSend, game.GetSocket(PlayerNumber.PlayerOne));
+                Send(RequestType.GameReady, toSend, game.GetSocket(PlayerNumber.PlayerTwo));
             }
         }
     }

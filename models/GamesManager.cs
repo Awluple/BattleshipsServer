@@ -50,28 +50,21 @@ namespace BattleshipsServer.Board
             return game;
         }
 
-        static public bool SetBoard(UserBoard userBoard, string player, out bool gameReady, out WebSocket playerSocket, out WebSocket opponentSocket){
+        static public bool SetBoard(UserBoard userBoard, string player, out bool gameReady, out Game requestedGame){
             Game game = GetGame(userBoard.gameId);
-
+            requestedGame = game;
             if(game.players.playerOne.Value.userId == player) {
-                game.playerOneBoard = new Board(userBoard.board);
-                playerSocket = game.players.playerOne.Value.WSocket.WebSocket;
-                opponentSocket = game.players.playerTwo.Value.WSocket.WebSocket;
+                game.playerOneBoard = new GameBoard(userBoard.board);
             } else if(game.players.playerTwo.Value.userId == player) {
-                game.playerTwoBoard = new Board(userBoard.board);
-                playerSocket = game.players.playerTwo.Value.WSocket.WebSocket;
-                opponentSocket = game.players.playerOne.Value.WSocket.WebSocket;
+                game.playerTwoBoard = new GameBoard(userBoard.board);
             } else {
                 gameReady = false;
-                playerSocket = null;
-                opponentSocket= null;
                 return false;
             }
+            
             if(game.playerOneBoard != null && game.playerTwoBoard != null){
                 gameReady = true;
-                opponentSocket = game.GetOpponent(player).Value.WSocket.WebSocket;
             } else {
-                opponentSocket = null;
                 gameReady = false;
             }
             return true;
