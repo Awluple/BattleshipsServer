@@ -28,8 +28,7 @@ namespace BattleshipsServer
 
             Console.WriteLine("Press any key to exit...");
             Console.ReadKey();
-        
-
+           
         }
     }
 

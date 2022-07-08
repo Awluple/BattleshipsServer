@@ -60,36 +60,40 @@ namespace BattleshipsServer.Board
         }
 
         private bool CheckShipHealth(int row, int column) {
-            (bool tried, bool alive) firstSide = (false, true);
-            (bool tried, bool alive) secondSide = (false, true);
+            (bool tried, bool alive) firstSide = (false, false);
+            (bool tried, bool alive) secondSide = (false, false);
 
             for (var rowIndex = row - 1; rowIndex <= row + 1; rowIndex++) {
                 for (var columnIndex = column - 1; columnIndex <= column + 1; columnIndex++) {
-                    if(columnIndex < 0 || columnIndex >= 11 || rowIndex < 0 || rowIndex >= 11) continue;
+                    if(columnIndex < 0 || columnIndex > 9 || rowIndex < 0 || rowIndex > 9) continue;
                     if(board[rowIndex, columnIndex] != 0){
                         ShipOrientation orientation = rowIndex - row != 0 ? ShipOrientation.Horizontal : ShipOrientation.Vertical;
 
                         if(rowIndex == row && columnIndex == column) {
                             continue;
                         }
+
+                        int vector;
+
+                        if(orientation == ShipOrientation.Horizontal) {
+                            vector = rowIndex - row;
+                        } else {
+                            vector = columnIndex - column;
+                        }
                         
                         if(firstSide.tried == false) {
                             firstSide.tried = true;
-                            firstSide.alive = CheckNextSegment(orientation, 1, column, row);
+                            firstSide.alive = CheckNextSegment(orientation, vector, column, row);
                         } else {
                             secondSide.tried = true;
-                            secondSide.alive = CheckNextSegment(orientation, -1, column, row);
+                            secondSide.alive = CheckNextSegment(orientation, vector, column, row);
                         }
                     };
                 }
             }
 
-            if(firstSide.alive || secondSide.alive) {
-                if(firstSide.tried || secondSide.tried){
-                    return true;
-                } else {
-                    return false; // mark as destroyed for 1 segment ships
-                }
+            if(firstSide.tried || secondSide.tried) {
+                return firstSide.alive || secondSide.alive;
             } else {
                 return false;
             }
