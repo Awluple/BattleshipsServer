@@ -26,6 +26,8 @@ namespace BattleshipsServer.Board
     {
         public int[,] board{get; set;}
 
+        private int aliveShipsSegments = 18;
+
         public GameBoard(int[,] board) {
             this.board = board;
         }
@@ -47,6 +49,11 @@ namespace BattleshipsServer.Board
         public ShotStatus CheckShot(int row, int column) {
             if(board[row, column] == 1) {
                 board[row, column] = -1;
+                aliveShipsSegments--;
+
+                if(aliveShipsSegments == 0) {
+                    return ShotStatus.Finished;
+                }
             } else {
                 return ShotStatus.Miss;
             }

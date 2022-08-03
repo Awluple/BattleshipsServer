@@ -26,18 +26,31 @@ namespace BattleshipsServer
             JObject obje = (JObject)data["shot"];
             Shot shot = obje.ToObject<Shot>();
 
-            Game game = GamesManager.GetGame(shot.gameId);
-            ShotStatus shotStatus = game.CheckShot(shot.row, shot.column, shot.userId.ToString());
+            Game game = GamesManager.GetGame(Int32.Parse(e.WSocketContext.Headers["game"]));
+            ShotStatus shotStatus = game.CheckShot(shot.row, shot.column, e.WSocketContext.Headers["player"]);
 
-            ShotResult result = new ShotResult(shot.column, shot.row, shotStatus);
-            Console.WriteLine($"{shot.column}, {shot.row}, {shot.userId.ToString()}, {result.shotStatus}");
-            
-            Dictionary<string ,object> toSend = new Dictionary<string, object> {
-                {"shotResult", result}
-            };
+            Dictionary<string ,object> toSend;
 
-            Send(RequestType.ShotResult, toSend, game.GetSocket(PlayerNumber.PlayerOne));
-            Send(RequestType.ShotResult, toSend, game.GetSocket(PlayerNumber.PlayerTwo));
+            RequestType request;
+
+            if(shotStatus == ShotStatus.Finished) {
+                GameResult result = new GameResult(shot.column, shot.row, ShotStatus.Destroyed, Int32.Parse(e.WSocketContext.Headers["player"]));
+                toSend = new Dictionary<string, object> {
+                    {"gameResult", result}
+                };
+
+                request = RequestType.GameResult;
+
+            } else {
+                ShotResult result = new ShotResult(shot.column, shot.row, shotStatus);
+                Console.WriteLine($"{shot.column}, {shot.row}, {e.WSocketContext.Headers["player"]}, {result.shotStatus}");
+                toSend = new Dictionary<string, object> {
+                    {"shotResult", result}
+                };
+                request = RequestType.ShotResult;
+            }
+            Send(request, toSend, game.GetSocket(PlayerNumber.PlayerOne));
+            Send(request, toSend, game.GetSocket(PlayerNumber.PlayerTwo));
         }
     }
 }

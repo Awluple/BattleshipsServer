@@ -28,7 +28,7 @@ namespace BattleshipsServer
 
             bool gameReady = false;
             Game game = null;
-            bool boardSet = GamesManager.SetBoard(board, e.WSocketContext.Headers["player"], out gameReady, out game);
+            bool boardSet = GamesManager.SetBoard(board, Int32.Parse(e.WSocketContext.Headers["game"]), e.WSocketContext.Headers["player"], out gameReady, out game);
 
             Random rnd = new Random();
             Dictionary<string ,object> toSend = new Dictionary<string, object> {

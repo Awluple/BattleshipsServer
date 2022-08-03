@@ -25,7 +25,6 @@ namespace BattleshipsServer
                 return;
             }
 
-            // User user = await JsonSerializer.DeserializeAsync<User>(Request.InputStream);
             
             Dictionary<string, int> result = new Dictionary<string, int>() {
                 {"id", GamesManager.RegisterGame()}

@@ -20,6 +20,7 @@ namespace BattleshipsServer.Board
 
         public GameBoard playerOneBoard {get; set;}
         public GameBoard playerTwoBoard {get; set;}
+        public bool finished = false;
 
         public Game() {
         }

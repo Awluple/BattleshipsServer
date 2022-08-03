@@ -49,6 +49,16 @@ namespace BattleshipsServer
         }
     }
 
+    public class WebSocketContextDisconnectEventArgs : System.EventArgs {
+        public readonly WebSocketContext WSocketContext;
+        public readonly bool unexpectedClosure;
+
+        public WebSocketContextDisconnectEventArgs (WebSocketContext WSocketContext, bool unexpectedClosure) {
+            this.WSocketContext = WSocketContext;;
+            this.unexpectedClosure = unexpectedClosure;
+        }
+    }
+
     public class RequestProcessorEventArgs : System.EventArgs {
         public readonly HttpListenerContext context;
 
@@ -64,7 +74,7 @@ namespace BattleshipsServer
 
         // public event EventHandler<WebSocketContextEventArgs> NewWebSocketRequest;
         public event EventHandler<WebSocketContextEventArgs> WebSocketRequest;
-        public event EventHandler<WebSocketContextEventArgs> WebSocketClose;
+        public event EventHandler<WebSocketContextDisconnectEventArgs> WebSocketClose;
 
         public event EventHandler<RequestProcessorEventArgs> HttpRequest;
 
@@ -81,7 +91,7 @@ namespace BattleshipsServer
             WebSocketRequest?.Invoke(this, e);
         }
 
-        protected virtual void OnWebSocketClose (WebSocketContextEventArgs e) {
+        protected virtual void OnWebSocketClose (WebSocketContextDisconnectEventArgs e) {
             WebSocketClose?.Invoke(this, e);
         }
 
@@ -140,30 +150,26 @@ namespace BattleshipsServer
                 {
                     
                     WebSocketReceiveResult receiveResult = await webSocket.ReceiveAsync(new ArraySegment<byte>(receiveBuffer), CancellationToken.None);
-                    // Console.WriteLine("Req ID: " + webSocketContext.Headers["player"]);
                     
                     if (receiveResult.MessageType == WebSocketMessageType.Close)
                     {
-                        OnWebSocketClose(new WebSocketContextEventArgs(webSocketContext, receiveResult, receiveBuffer));
+                        OnWebSocketClose(new WebSocketContextDisconnectEventArgs(webSocketContext, false));
                         await webSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, "", CancellationToken.None);
                     }
                     
                     else if (receiveResult.MessageType == WebSocketMessageType.Text)
                     {    
-                        OnWebSocketClose(new WebSocketContextEventArgs(webSocketContext, receiveResult, receiveBuffer));
+                        OnWebSocketClose(new WebSocketContextDisconnectEventArgs(webSocketContext, false));
                         await webSocket.CloseAsync(WebSocketCloseStatus.InvalidMessageType, "Cannot accept text frame", CancellationToken.None);
                     } else if (webSocketContext.Headers["Sec-WebSocket-Protocol"] != "bson") {
-                        OnWebSocketClose(new WebSocketContextEventArgs(webSocketContext, receiveResult, receiveBuffer));
+                        OnWebSocketClose(new WebSocketContextDisconnectEventArgs(webSocketContext, false));
                         await webSocket.CloseAsync(WebSocketCloseStatus.ProtocolError, "Unsupported subprotocol", CancellationToken.None);
                     }
 
                     else
                     {                        
                         OnWebSocketRequest(new WebSocketContextEventArgs(webSocketContext, receiveResult, receiveBuffer));
-                        // await webSocket.SendAsync(new ArraySegment<byte>(receiveBuffer, 0, receiveResult.Count), WebSocketMessageType.Binary, receiveResult.EndOfMessage, CancellationToken.None);
                     }
-
-                    // Console.WriteLine(Convert.ToBase64String(receiveBuffer)[..4]);
 
                 }
             }
@@ -171,13 +177,15 @@ namespace BattleshipsServer
             {
                 // Just log any exceptions to the console.
                 Console.WriteLine("Exception: {0}", e);
+                OnWebSocketClose(new WebSocketContextDisconnectEventArgs(webSocketContext, true));
             }
             finally
             {
                 // Clean up by disposing the WebSocket once it is closed/aborted.
-                if (webSocket != null)
+                if (webSocket != null){
                     Console.WriteLine("Disconnected ID: " + webSocketContext.Headers["player"]);
-                    webSocket.Dispose(); 
+                    webSocket.Dispose();
+                }
             }
         }
     }

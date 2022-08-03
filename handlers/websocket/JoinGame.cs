@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 using BattleshipsServer.Board;
@@ -29,7 +30,6 @@ namespace BattleshipsServer
             Dictionary<string ,object> toSend = new Dictionary<string, object> {
                 {"confirmation", confirmation}
             };
-            
             Send(RequestType.JoinConfirmation, toSend, e.WSocketContext.WebSocket);
 
             Player? player = GamesManager.gamesList[requestedGame.id].GetOpponent(requestedGame.player);

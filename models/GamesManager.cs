@@ -50,8 +50,8 @@ namespace BattleshipsServer.Board
             return game;
         }
 
-        static public bool SetBoard(UserBoard userBoard, string player, out bool gameReady, out Game requestedGame){
-            Game game = GetGame(userBoard.gameId);
+        static public bool SetBoard(UserBoard userBoard, int gameId, string player, out bool gameReady, out Game requestedGame){
+            Game game = GetGame(gameId);
             requestedGame = game;
             if(game.players.playerOne.Value.userId == player) {
                 game.playerOneBoard = new GameBoard(userBoard.board);
