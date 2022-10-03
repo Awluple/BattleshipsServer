@@ -37,6 +37,7 @@ namespace BattleshipsServer
         }
 
         private async void Send(RequestType dataType, Dictionary<string ,object> toSend, WebSocket wsocket) {
+            if(wsocket == null) return;
             using (MemoryStream msa = new MemoryStream())
             using (BsonDataWriter datawriter = new BsonDataWriter(msa))
             {
