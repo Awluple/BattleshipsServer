@@ -21,8 +21,16 @@ namespace BattleshipsServer.Board
         public GameBoard playerOneBoard {get; set;}
         public GameBoard playerTwoBoard {get; set;}
         public bool finished = false;
+        public bool rematchProposed = false;
 
         public Game() {
+        }
+
+        public void reset() {
+            rematchProposed = false;
+            playerOneBoard = null;
+            playerTwoBoard = null;
+            rematchProposed = false;
         }
 
         #nullable enable

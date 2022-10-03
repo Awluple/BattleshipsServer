@@ -22,6 +22,7 @@ namespace BattleshipsServer
             this.server.WebSocketRequest += this.JoinGame;
             this.server.WebSocketRequest += this.SetBoard;
             this.server.WebSocketRequest += this.PlayerShot;
+            this.server.WebSocketRequest += this.Rematch;
             this.server.WebSocketClose += this.ConnectionLost;
         }
 
@@ -48,7 +49,7 @@ namespace BattleshipsServer
         partial void JoinGame(object sender, WebSocketContextEventArgs e);
         partial void SetBoard(object sender, WebSocketContextEventArgs e);
         partial void PlayerShot(object sender, WebSocketContextEventArgs e);
+        partial void Rematch(object sender, WebSocketContextEventArgs e);
         partial void ConnectionLost(object sender, WebSocketContextDisconnectEventArgs e);
-
     }
 }

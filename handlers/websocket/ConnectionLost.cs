@@ -17,8 +17,6 @@ namespace BattleshipsServer
 
             Game game = GamesManager.GetGame(gameId);
 
-            Console.WriteLine("Games Count: "+ GamesManager.gamesList.Count);
-
             if(game.finished) {
                 Send(RequestType.OpponentLeft, new Dictionary<string, object>(), game.GetOpponent(e.WSocketContext.Headers["player"]).Value.WSocket.WebSocket);
                 GamesManager.UnregisterGame(Int32.Parse(e.WSocketContext.Headers["game"]));
