@@ -66,5 +66,8 @@ namespace BattleshipsServer.Board
                 return players.playerTwo.Value.WSocket.WebSocket;
             }
         }
+        public bool IsFull() {
+            return players.playerOne != null && players.playerTwo != null;
+        }
     }
 }

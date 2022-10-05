@@ -25,9 +25,13 @@ namespace BattleshipsServer.Board
         }
         static public JoinConfirmation AddPlayer(int gameId, string player, WebSocketContext WSocket) {
             Game game;
-            if (!gamesList.TryGetValue(gameId, out game) && ((game.players.playerOne == null) || (game.players.playerTwo == null))) {
+            if (!gamesList.TryGetValue(gameId, out game)) {
                 return new JoinConfirmation(false, null);
             }
+            if(game.IsFull()) {
+                return new JoinConfirmation(false, null);
+            }
+            
             if(game.players.playerOne == null) {
                 game.players.playerOne = new Player(player, WSocket);
             } else {
