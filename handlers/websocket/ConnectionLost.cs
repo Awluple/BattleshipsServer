@@ -18,8 +18,8 @@ namespace BattleshipsServer
             Game game = GamesManager.GetGame(gameId);
 
             if(game == null) {
-                    return;
-                }
+                 return;
+            }
 
             if(game.finished) {
                 Send(RequestType.OpponentLeft, new Dictionary<string, object>(), game.GetOpponent(e.WSocketContext.Headers["player"]).Value.WSocket.WebSocket);

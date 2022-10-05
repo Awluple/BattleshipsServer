@@ -184,6 +184,7 @@ namespace BattleshipsServer
                 // Clean up by disposing the WebSocket once it is closed/aborted.
                 if (webSocket != null){
                     Console.WriteLine("Disconnected ID: " + webSocketContext.Headers["player"]);
+                    OnWebSocketClose(new WebSocketContextDisconnectEventArgs(webSocketContext, true));
                     webSocket.Dispose();
                 }
             }
