@@ -16,8 +16,9 @@ namespace BattleshipsServer
                 return;
             }
 
-            Dictionary<string, int> user = new Dictionary<string, int>() {
-                {"id", Users.getUserId()}
+            Dictionary<string, string> user = new Dictionary<string, string>() {
+                {"id", Users.getUserId().ToString()},
+                {"sessionId", Settings.sessionId}
             };
 
             byte[] bOutput = JsonSerializer.SerializeToUtf8Bytes(user);

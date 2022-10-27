@@ -104,7 +104,13 @@ namespace BattleshipsServer
             while (true)
             {
                 HttpListenerContext listenerContext = await listener.GetContextAsync();
-                if (listenerContext.Request.IsWebSocketRequest)
+
+                // force new user id after server restart
+                if((listenerContext.Request.Headers["sessionId"] == null || listenerContext.Request.Headers["sessionId"] != "") && listenerContext.Request.Headers["sessionId"] != Settings.sessionId) {
+                        listenerContext.Response.StatusCode = 403;
+                        listenerContext.Response.Close();
+                }
+                else if (listenerContext.Request.IsWebSocketRequest)
                 {
                     ProcessRequest(listenerContext);
                 }
@@ -145,18 +151,15 @@ namespace BattleshipsServer
                 byte[] receiveBuffer = new byte[1024];
 
                 while (webSocket.State == WebSocketState.Open)
-                {
-                    
+                {                  
                     WebSocketReceiveResult receiveResult = await webSocket.ReceiveAsync(new ArraySegment<byte>(receiveBuffer), CancellationToken.None);
                     
-                    if (receiveResult.MessageType == WebSocketMessageType.Close)
-                    {
+                    if (receiveResult.MessageType == WebSocketMessageType.Close) {
                         OnWebSocketClose(new WebSocketContextDisconnectEventArgs(webSocketContext, false));
                         await webSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, "", CancellationToken.None);
                     }
                     
-                    else if (receiveResult.MessageType == WebSocketMessageType.Text)
-                    {    
+                    else if (receiveResult.MessageType == WebSocketMessageType.Text) {    
                         OnWebSocketClose(new WebSocketContextDisconnectEventArgs(webSocketContext, false));
                         await webSocket.CloseAsync(WebSocketCloseStatus.InvalidMessageType, "Cannot accept text frame", CancellationToken.None);
                     } else if (webSocketContext.Headers["Sec-WebSocket-Protocol"] != "bson") {
@@ -164,8 +167,7 @@ namespace BattleshipsServer
                         await webSocket.CloseAsync(WebSocketCloseStatus.ProtocolError, "Unsupported subprotocol", CancellationToken.None);
                     }
 
-                    else
-                    {                        
+                    else {                        
                         OnWebSocketRequest(new WebSocketContextEventArgs(webSocketContext, receiveResult, receiveBuffer));
                     }
 
