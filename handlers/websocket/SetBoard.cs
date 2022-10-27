@@ -12,7 +12,7 @@ using BattleshipsShared.Models;
 
 namespace BattleshipsServer
 {
-
+    /// <summary>Handles setting a game board for users</summary>
     partial class WebSocketHandlers {
         partial void SetBoard(object sender, WebSocketContextEventArgs e) {
             if(e.message.requestType != RequestType.SetBoard) {
@@ -20,11 +20,7 @@ namespace BattleshipsServer
             }
 
             var ws = e.WSocketResult;
-            JObject obj = (JObject)e.message.data;
-
-            Dictionary<string, object> data = obj.ToObject<Dictionary<string, object>>();
-            JObject obje = (JObject)data["userBoard"];
-            UserBoard board = obje.ToObject<UserBoard>();
+            UserBoard board = this.GetObjectFromMessage<UserBoard>("userBoard", e.message);
 
             bool gameReady = false;
             Game game = null;
@@ -32,7 +28,7 @@ namespace BattleshipsServer
 
             Random rnd = new Random();
             Dictionary<string ,object> toSend = new Dictionary<string, object> {
-                {"startingPlayer",  (object)(rnd.Next(1) == 0 ? e.WSocketContext.Headers["player"] : "0")} // a player who recives it's id starts first
+                {"startingPlayer",  (object)(rnd.Next(1) == 0 ? e.WSocketContext.Headers["player"] : "0")} // a player who recives it's id has the first turn
             };
             if(boardSet && gameReady) {
                 Send(RequestType.GameReady, toSend, game.GetSocket(PlayerNumber.PlayerOne));

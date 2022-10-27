@@ -5,10 +5,14 @@ using Newtonsoft.Json;
 using System.Threading;
 using System.Net.WebSockets;
 
+using Newtonsoft.Json.Linq;
+
 using BattleshipsShared.Communication;
 
 namespace BattleshipsServer
 {
+    /// <summary>Holds WebSocket communication functions and sends WebSocket messages</summary>
+    /// <param name="server">Server object to attach events</param>
     partial class WebSocketHandlers
     {
         private Server server;
@@ -25,17 +29,22 @@ namespace BattleshipsServer
             this.server.WebSocketRequest += this.Rematch;
             this.server.WebSocketClose += this.ConnectionLost;
         }
+        /// <summary>Gets an object from WebSocket message</summary>
+        /// <param name="dataKey">Key holding data in a message</param>
+        /// <param name="message">Recieved message</param>
+        public T GetObjectFromMessage<T>(string dataKey, Message message) {
+            JObject obj = (JObject)message.data;
 
-        private void GetDeserialized<T>(byte[] receiveBuffer, out T result) {
-            MemoryStream ms = new MemoryStream(receiveBuffer);
-
-            using (BsonDataReader reader = new BsonDataReader(ms))
-            {
-                JsonSerializer serializer = new JsonSerializer();
-                result = serializer.Deserialize<T>(reader);
-            }
+            Dictionary<string, object> data = obj.ToObject<Dictionary<string, object>>();
+            JObject obje = (JObject)data[dataKey];
+            T retrievedObject = obje.ToObject<T>();
+            return retrievedObject;
         }
 
+        /// <summary>Sends a WebSocket message</summary>
+        /// <param name="dataType">Type of the message</param>
+        /// <param name="toSend">Data to send</param>
+        /// <param name="wsocket">WebSocket object to which data is to be sent</param>
         private async void Send(RequestType dataType, Dictionary<string ,object> toSend, WebSocket wsocket) {
             if(wsocket == null) return;
             using (MemoryStream msa = new MemoryStream())

@@ -9,7 +9,7 @@ using BattleshipsServer.Board;
 
 namespace BattleshipsServer
 {
-
+    /// <summary>Returns list of all games on http request</summary>
     partial class HttpHandlers {
         partial void ReturnGamesList(object sender, RequestProcessorEventArgs e){
             if(e.context.Request.HttpMethod != "GET" || e.context.Request.Url.ToString() != Settings.serverUri) {

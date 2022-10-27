@@ -24,7 +24,9 @@ namespace BattleshipsServer
         public readonly byte[] receiveBuffer;
         public readonly Message message;
 
-
+        /// <summary>Deserializes data comming from the clent into Message object</summary>
+        /// <param name="receiveBuffer">Received buffer from the listener</param>
+        /// <returns>Deselialized Message object</returns>
         private Message GetData(byte[] receiveBuffer) {
             MemoryStream ms = new MemoryStream(receiveBuffer);
             try
@@ -67,21 +69,15 @@ namespace BattleshipsServer
         }
 
     }
-
+    /// <summary>Responsible for listening and handling WebSocket and Http messages, uses events to handle responses</summary>
     class Server
     {        
         private int count = 0;
 
-        // public event EventHandler<WebSocketContextEventArgs> NewWebSocketRequest;
         public event EventHandler<WebSocketContextEventArgs> WebSocketRequest;
         public event EventHandler<WebSocketContextDisconnectEventArgs> WebSocketClose;
 
         public event EventHandler<RequestProcessorEventArgs> HttpRequest;
-
-
-        // protected virtual void OnNewWebSocketRequest (WebSocketContextEventArgs e) {
-        //     NewWebSocketRequest?.Invoke(this, e);
-        // }
 
         protected virtual void OnHttpRequest (RequestProcessorEventArgs e) {
             HttpRequest?.Invoke(this, e);
@@ -96,7 +92,8 @@ namespace BattleshipsServer
         }
 
         
-
+        /// <summary>Starts listening for WebSocket and Http messages</summary>
+        /// <param name="listenerPrefix">Uri to listen</param>
         public async void Start(string listenerPrefix)
         {
             HttpListener listener = new HttpListener();
@@ -118,11 +115,13 @@ namespace BattleshipsServer
                 }
             }
         }
-
+        /// <summary>Decides how to response to WebSocket messages</summary>
+        /// <param name="listenerContext">WebSocket request</param>
         private async void ProcessRequest(HttpListenerContext listenerContext)
         {
             
             WebSocketContext webSocketContext = null;
+            // Set up WebSocket connection
             try
             {                
                 webSocketContext = await listenerContext.AcceptWebSocketAsync(subProtocol: null);
@@ -139,13 +138,12 @@ namespace BattleshipsServer
             }
                                 
             WebSocket webSocket = webSocketContext.WebSocket;
-
+            
+            // Process a message
             try
             {
-                //### Receiving
                 byte[] receiveBuffer = new byte[1024];
 
-                // While the WebSocket connection remains open run a simple loop that receives data and sends it back.
                 while (webSocket.State == WebSocketState.Open)
                 {
                     
@@ -175,13 +173,12 @@ namespace BattleshipsServer
             }
             catch(Exception e)
             {
-                // Just log any exceptions to the console.
                 Console.WriteLine("Exception: {0}", e);
                 OnWebSocketClose(new WebSocketContextDisconnectEventArgs(webSocketContext, true));
             }
             finally
             {
-                // Clean up by disposing the WebSocket once it is closed/aborted.
+                // Clean up the WebSocket once it is closed/aborted.
                 if (webSocket != null){
                     Console.WriteLine("Disconnected ID: " + webSocketContext.Headers["player"]);
                     OnWebSocketClose(new WebSocketContextDisconnectEventArgs(webSocketContext, true));

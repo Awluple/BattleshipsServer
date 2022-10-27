@@ -6,13 +6,11 @@ using BattleshipsServer.Board;
 using System.Net.WebSockets;
 using BattleshipsShared.Communication;
 
-using Newtonsoft.Json.Linq;
-
 using BattleshipsShared.Models;
 
 namespace BattleshipsServer
 {
-
+    /// <summary>Handles players shots, checks the result of the shots</summary>
     partial class WebSocketHandlers {
         partial void PlayerShot(object sender, WebSocketContextEventArgs e) {
             if(e.message.requestType != RequestType.PlayerShot) {
@@ -20,11 +18,7 @@ namespace BattleshipsServer
             }
 
             var ws = e.WSocketResult;
-            JObject obj = (JObject)e.message.data;
-
-            Dictionary<string, object> data = obj.ToObject<Dictionary<string, object>>();
-            JObject obje = (JObject)data["shot"];
-            Shot shot = obje.ToObject<Shot>();
+            Shot shot = this.GetObjectFromMessage<Shot>("shot", e.message);
 
             Game game = GamesManager.GetGame(Int32.Parse(e.WSocketContext.Headers["game"]));
             ShotStatus shotStatus = game.CheckShot(shot.row, shot.column, e.WSocketContext.Headers["player"]);
@@ -33,7 +27,7 @@ namespace BattleshipsServer
 
             RequestType request;
 
-            if(shotStatus == ShotStatus.Finished) {
+            if(shotStatus == ShotStatus.Finished) { // send game finished message if one of the user has lost all ships
                 GameResult result = new GameResult(shot.column, shot.row, ShotStatus.Destroyed, Int32.Parse(e.WSocketContext.Headers["player"]));
                 toSend = new Dictionary<string, object> {
                     {"gameResult", result}
@@ -43,7 +37,6 @@ namespace BattleshipsServer
 
             } else {
                 ShotResult result = new ShotResult(shot.column, shot.row, shotStatus);
-                Console.WriteLine($"{shot.column}, {shot.row}, {e.WSocketContext.Headers["player"]}, {result.shotStatus}");
                 toSend = new Dictionary<string, object> {
                     {"shotResult", result}
                 };

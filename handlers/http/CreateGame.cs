@@ -9,7 +9,7 @@ using BattleshipsServer.Board;
 
 namespace BattleshipsServer
 {
-
+    /// <summary>Handles creation of game objects</summary>
     partial class HttpHandlers {
         partial void CreateGame(object sender, RequestProcessorEventArgs e) {
             var Response = e.context.Response;

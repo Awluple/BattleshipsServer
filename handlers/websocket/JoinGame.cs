@@ -10,7 +10,7 @@ using Newtonsoft.Json.Linq;
 
 namespace BattleshipsServer
 {
-
+    /// <summary>Handles games join requests</summary>
     partial class WebSocketHandlers {
         partial void JoinGame(object sender, WebSocketContextEventArgs e) {
 
@@ -19,11 +19,7 @@ namespace BattleshipsServer
             }
 
             var ws = e.WSocketResult;
-            JObject obj = (JObject)e.message.data;
-
-            Dictionary<string, object> data = obj.ToObject<Dictionary<string, object>>();
-            JObject obje = (JObject)data["gameJoinInfo"];
-            GameJoinInfo requestedGame = obje.ToObject<GameJoinInfo>();
+            GameJoinInfo requestedGame = this.GetObjectFromMessage<GameJoinInfo>("gameJoinInfo", e.message);
 
             JoinConfirmation confirmation = GamesManager.AddPlayer(requestedGame.id, requestedGame.player, e.WSocketContext);
 

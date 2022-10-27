@@ -10,7 +10,7 @@ using Newtonsoft.Json.Linq;
 
 namespace BattleshipsServer
 {
-
+    /// <summary>Handles rematch propositions and initializations</summary>
     partial class WebSocketHandlers {
         partial void Rematch(object sender, WebSocketContextEventArgs e) {
 

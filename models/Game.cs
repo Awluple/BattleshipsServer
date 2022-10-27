@@ -13,7 +13,7 @@ namespace BattleshipsServer.Board
         PlayerOne,
         PlayerTwo
     }
-
+    /// <summary>Holds all the game data such as players information and boards</summary>
     public class Game
     {
         public (Player? playerOne, Player? playerTwo) players = (null, null);
@@ -23,9 +23,7 @@ namespace BattleshipsServer.Board
         public bool finished = false;
         public bool rematchProposed = false;
 
-        public Game() {
-        }
-
+        /// <summary>Resets the game state for rematch</summary>
         public void reset() {
             rematchProposed = false;
             playerOneBoard = null;
@@ -33,6 +31,9 @@ namespace BattleshipsServer.Board
             rematchProposed = false;
         }
 
+        /// <summary>Gets the opponent object</summary>
+        /// <param name="player">Current player id</param>
+        /// <returns>Opponent player object</returns>
         #nullable enable
         public Player? GetOpponent(string player) {
             if(players.playerOne == null || players.playerTwo == null) {
@@ -44,6 +45,10 @@ namespace BattleshipsServer.Board
                 return players.playerOne;
             }
         }
+        /// <summary>Gets a result of a shot</summary>
+        /// <param name="row">Row cell number</param>
+        /// <param name="column">Column cell number</param>
+        /// <returns>Shot result</returns>
 
         public ShotStatus CheckShot(int row, int column, string player) {
             if(players.playerOne == null || players.playerTwo == null) {
@@ -56,6 +61,9 @@ namespace BattleshipsServer.Board
             }
         }
 
+        /// <summary>Gets WebSocket object of a player</summary>
+        /// <param name="player">Player from whom to get the WebSocket object</param>
+        /// <returns>WebSocket object of the player</returns>
         public WebSocket? GetSocket(PlayerNumber player) {
             if(players.playerOne == null || players.playerTwo == null) {
                 throw new NullReferenceException("One of the players is not set");
@@ -66,6 +74,8 @@ namespace BattleshipsServer.Board
                 return players.playerTwo.Value.WSocket.WebSocket;
             }
         }
+        /// <summary>Checks if the game is full</summary>
+        /// <returns>True if the game is full</returns>
         public bool IsFull() {
             return players.playerOne != null && players.playerTwo != null;
         }

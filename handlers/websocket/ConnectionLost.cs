@@ -10,7 +10,7 @@ using Newtonsoft.Json.Linq;
 
 namespace BattleshipsServer
 {
-
+    /// <summary>Sends a message if a connection with one of the users has been lost and unregisteds a game</summary>
     partial class WebSocketHandlers {
         partial void ConnectionLost(object sender, WebSocketContextDisconnectEventArgs e) {
             int gameId = Int32.Parse(e.WSocketContext.Headers["game"]);
