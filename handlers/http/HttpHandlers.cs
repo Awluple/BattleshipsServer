@@ -28,6 +28,8 @@ namespace BattleshipsServer
         return (this.path + this.httpMethod).GetHashCode();
     }
     }
+    /// <summary>Holds Http communication functions and sends http messages</summary>
+    /// <param name="server">Server object to attach events</param>
     partial class HttpHandlers
     {
         private Server server;
