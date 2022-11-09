@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using System.Collections.Generic;
 using Newtonsoft.Json.Bson;
@@ -15,6 +16,9 @@ namespace BattleshipsServer
     /// <param name="server">Server object to attach events</param>
     partial class WebSocketHandlers
     {
+
+        private Dictionary<RequestType, Action<object, WebSocketContextEventArgs>> routes = new Dictionary<RequestType, Action<object, WebSocketContextEventArgs>>();
+        private delegate void Route(object sender, WebSocketContextEventArgs  e);
         private Server server;
 
         public WebSocketHandlers(Server WebSocketHandlers) {
@@ -23,12 +27,23 @@ namespace BattleshipsServer
         }
 
         public void Start() {
-            this.server.WebSocketRequest += this.JoinGame;
-            this.server.WebSocketRequest += this.SetBoard;
-            this.server.WebSocketRequest += this.PlayerShot;
-            this.server.WebSocketRequest += this.Rematch;
             this.server.WebSocketClose += this.ConnectionLost;
+            
+            routes.Add(RequestType.JoinGame, this.JoinGame);
+            routes.Add(RequestType.SetBoard, this.SetBoard);
+            routes.Add(RequestType.PlayerShot, this.PlayerShot);
+            routes.Add(RequestType.RematchProposition, this.Rematch);
+            this.server.WebSocketRequest += RequestHandler;
         }
+
+        /// <summary>Searches for a function to call in the routes dictionary based of message RequestType</summary>
+        private void RequestHandler(object sender, WebSocketContextEventArgs e) {
+            Action<object, WebSocketContextEventArgs> route;
+            if(routes.TryGetValue(e.message.requestType, out route)) {
+                route(sender, e);
+            }
+        }
+
         /// <summary>Gets an object from WebSocket message</summary>
         /// <param name="dataKey">Key holding data in a message</param>
         /// <param name="message">Recieved message</param>

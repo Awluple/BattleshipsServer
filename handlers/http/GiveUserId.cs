@@ -12,9 +12,6 @@ namespace BattleshipsServer
 
     partial class HttpHandlers {
         partial void GiveUserId(object sender, RequestProcessorEventArgs e){
-            if(e.context.Request.HttpMethod != "GET" || e.context.Request.Url.ToString() != Settings.serverUri + "userid") {
-                return;
-            }
 
             Dictionary<string, string> user = new Dictionary<string, string>() {
                 {"id", Users.getUserId().ToString()},

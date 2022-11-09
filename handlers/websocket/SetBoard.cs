@@ -15,9 +15,6 @@ namespace BattleshipsServer
     /// <summary>Handles setting a game board for users</summary>
     partial class WebSocketHandlers {
         partial void SetBoard(object sender, WebSocketContextEventArgs e) {
-            if(e.message.requestType != RequestType.SetBoard) {
-                return;
-            }
 
             var ws = e.WSocketResult;
             UserBoard board = this.GetObjectFromMessage<UserBoard>("userBoard", e.message);

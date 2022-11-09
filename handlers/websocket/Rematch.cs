@@ -14,10 +14,6 @@ namespace BattleshipsServer
     partial class WebSocketHandlers {
         partial void Rematch(object sender, WebSocketContextEventArgs e) {
 
-            if(e.message.requestType != RequestType.RematchProposition) {
-                return;
-            }
-
             Game game = GamesManager.GetGame(Int32.Parse(e.WSocketContext.Headers["game"]));
 
             if(game == null) {

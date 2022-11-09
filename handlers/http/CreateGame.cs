@@ -15,11 +15,7 @@ namespace BattleshipsServer
             var Response = e.context.Response;
             var Request = e.context.Request;
 
-            if(Request.HttpMethod != "POST") {
-                return;
-            }
             if(Request.ContentType.ToLower() != "application/json") {
-                Console.WriteLine(Request.ContentType);
                 Response.StatusCode = 400;
                 Response.Close();
                 return;

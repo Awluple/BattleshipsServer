@@ -13,9 +13,6 @@ namespace BattleshipsServer
     /// <summary>Handles players shots, checks the result of the shots</summary>
     partial class WebSocketHandlers {
         partial void PlayerShot(object sender, WebSocketContextEventArgs e) {
-            if(e.message.requestType != RequestType.PlayerShot) {
-                return;
-            }
 
             var ws = e.WSocketResult;
             Shot shot = this.GetObjectFromMessage<Shot>("shot", e.message);

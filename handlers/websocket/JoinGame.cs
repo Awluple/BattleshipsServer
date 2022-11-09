@@ -14,10 +14,6 @@ namespace BattleshipsServer
     partial class WebSocketHandlers {
         partial void JoinGame(object sender, WebSocketContextEventArgs e) {
 
-            if(e.message.requestType != RequestType.JoinGame) {
-                return;
-            }
-
             var ws = e.WSocketResult;
             GameJoinInfo requestedGame = this.GetObjectFromMessage<GameJoinInfo>("gameJoinInfo", e.message);
 
