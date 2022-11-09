@@ -12,7 +12,7 @@ namespace BattleshipsServer
 {
 
     static class Settings {
-        public static readonly string serverUri = "http://127.0.0.1:7850/";
+        public static readonly string serverUri = "http://" + System.IO.File.ReadAllText(new Uri(@".\server_address.txt", UriKind.Relative).ToString()) + "/";
         public static string sessionId = "";
 
         private static Random random = new Random();

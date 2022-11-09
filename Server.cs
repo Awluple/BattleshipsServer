@@ -99,7 +99,7 @@ namespace BattleshipsServer
             HttpListener listener = new HttpListener();
             listener.Prefixes.Add(listenerPrefix);
             listener.Start();
-            Console.WriteLine("Listening...");
+            Console.WriteLine("Listening at {0} \nSession ID: {1}", Settings.serverUri, Settings.sessionId);
            
             while (true)
             {
