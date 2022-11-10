@@ -98,8 +98,17 @@ namespace BattleshipsServer
         {
             HttpListener listener = new HttpListener();
             listener.Prefixes.Add(listenerPrefix);
-            listener.Start();
+            try
+            {
+                listener.Start();
+            }
+            catch (System.Net.HttpListenerException)
+            {
+                Console.WriteLine("Failed to listen on prefix '{0}' because it conflicts with an existing registration on the machine. Please select a diffrent port in server_address.txt", Settings.serverUri);
+                return;
+            }
             Console.WriteLine("Listening at {0} \nSession ID: {1}", Settings.serverUri, Settings.sessionId);
+            Console.WriteLine("Press any key to stop...");
            
             while (true)
             {
@@ -173,9 +182,12 @@ namespace BattleshipsServer
 
                 }
             }
-            catch(Exception e)
+            catch(System.Net.WebSockets.WebSocketException e)
             {
                 OnWebSocketClose(new WebSocketContextDisconnectEventArgs(webSocketContext, true));
+            }
+            catch (Exception e) {
+                Console.WriteLine(e);
             }
             finally
             {

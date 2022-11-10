@@ -17,7 +17,7 @@ namespace BattleshipsServer
 
             Game game = GamesManager.GetGame(gameId);
 
-            if(game == null) {
+            if(game == null || !game.isPlayer(e.WSocketContext.Headers["player"])) {
                  return;
             }
 

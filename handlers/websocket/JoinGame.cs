@@ -24,8 +24,6 @@ namespace BattleshipsServer
             };
             Send(RequestType.JoinConfirmation, toSend, e.WSocketContext.WebSocket);
 
-            if(confirmation.succeed == false) return;
-
             Player? player = GamesManager.GetGame(requestedGame.id).GetOpponent(requestedGame.player);
             if(player != null) {
                 Send(RequestType.OpponentFound, toSend, player.Value.WSocket.WebSocket);

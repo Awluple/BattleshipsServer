@@ -71,6 +71,7 @@ namespace BattleshipsServer
             }
         }
 
+
         partial void JoinGame(object sender, WebSocketContextEventArgs e);
         partial void SetBoard(object sender, WebSocketContextEventArgs e);
         partial void PlayerShot(object sender, WebSocketContextEventArgs e);

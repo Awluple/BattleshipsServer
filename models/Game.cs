@@ -45,11 +45,20 @@ namespace BattleshipsServer.Board
                 return players.playerOne;
             }
         }
+
+        public bool isPlayer(string player) {
+            if(players.playerOne != null && players.playerOne.Value.userId == player){
+                return true;
+            } else if (players.playerTwo != null && players.playerTwo.Value.userId == player){
+                return true;
+            }
+            return false;
+        }
+
         /// <summary>Gets a result of a shot</summary>
         /// <param name="row">Row cell number</param>
         /// <param name="column">Column cell number</param>
         /// <returns>Shot result</returns>
-
         public ShotStatus CheckShot(int row, int column, string player) {
             if(players.playerOne == null || players.playerTwo == null) {
                 throw new NullReferenceException("One of the players is not set");

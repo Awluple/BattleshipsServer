@@ -35,11 +35,7 @@ namespace BattleshipsServer
 
             var httpHandler = new HttpHandlers(server);
             var WSHandler = new WebSocketHandlers(server);
-
-
-            Console.WriteLine("Press any key to stop...");
             Console.ReadKey();
-           
         }
     }
 
