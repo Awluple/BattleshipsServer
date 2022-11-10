@@ -175,7 +175,6 @@ namespace BattleshipsServer
             }
             catch(Exception e)
             {
-                Console.WriteLine("Exception: {0}", e);
                 OnWebSocketClose(new WebSocketContextDisconnectEventArgs(webSocketContext, true));
             }
             finally

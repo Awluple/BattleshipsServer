@@ -37,7 +37,7 @@ namespace BattleshipsServer
             var WSHandler = new WebSocketHandlers(server);
 
 
-            Console.WriteLine("Press any key to exit...");
+            Console.WriteLine("Press any key to stop...");
             Console.ReadKey();
            
         }
